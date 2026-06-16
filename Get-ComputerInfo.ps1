@@ -85,7 +85,7 @@ $info = [PSCustomObject]@{
 
 # System Filename with timestamp and save variables
 $timestamp  = Get-Date -Format ddMMyy-HHmmss
-$singlePath = Join-Path $runPath "$env:COMPUTERNAME-$timestamp.csv"
+#$singlePath = Join-Path $runPath "$env:COMPUTERNAME-$timestamp.csv"
 $masterPath = Join-Path $runPath "AllSystems.csv"
 
 Write-Host "`nExporting system information to CSV files..." -ForegroundColor Green
@@ -99,8 +99,8 @@ if (Test-Path $masterPath) {
     $info | Export-Csv $masterPath -NoTypeInformation
 }
 
-Write-Host "`nExported: "
-Write-Host $singlePath -ForegroundColor Cyan
+# Write-Host "`nExported: "
+# Write-Host $singlePath -ForegroundColor Cyan
 
 Write-Host "`nUpdated All Systems CSV: "
 Write-Host $masterPath -ForegroundColor Cyan

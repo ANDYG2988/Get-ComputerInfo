@@ -84,28 +84,6 @@ $info = [PSCustomObject]@{
     "Recovery Key" = $recoveryKey
 }
 
-# System Filename with timestamp and save variables
-$timestamp  = Get-Date -Format ddMMyy-HHmmss
-#$singlePath = Join-Path $runPath "$env:COMPUTERNAME-$timestamp.csv"
-$masterPath = Join-Path $runPath "AllSystems.csv"
-
-Write-Host "`nExporting system information to CSV files..." -ForegroundColor Green
-# 1) Export per-machine file (overwrites each time)
-$info | Export-Csv $singlePath -NoTypeInformation
-
-# 2) Append to master file (create header if it doesn't exist)
-if (Test-Path $masterPath) {
-    $info | Export-Csv $masterPath -NoTypeInformation -Append
-} else {
-    $info | Export-Csv $masterPath -NoTypeInformation
-}
-
-# Write-Host "`nExported: "
-# Write-Host $singlePath -ForegroundColor Cyan
-
-Write-Host "`nUpdated All Systems CSV: "
-Write-Host $masterPath -ForegroundColor Cyan
-Write-Host "`nDone!" -ForegroundColor Green
 
 
 
@@ -328,24 +306,29 @@ $htmlReport = @"
 </html>
 "@
 
-$outPath = Join-Path $runPath "$deviceName$timestamp.csv"
+# System Filename with timestamp and save variables
+$timestamp  = Get-Date -Format ddMMyy-HHmmss
+$masterPath = Join-Path $runPath "AllSystems.csv"
+$outPath = Join-Path $runPath "$deviceName-$timestamp.html"
 
-Write-Host "`nExporting system information to CSV files..." -ForegroundColor Green
-# 1) Export per-machine file (overwrites each time)
-$info | Export-Csv $outPath -NoTypeInformation
-
-# 2) Append to master file (create header if it doesn't exist)
-if (Test-Path $outPath) {
-    $info | Export-Csv $outPath -NoTypeInformation -Append
-    $htmlReport | Out-File -FilePath $outputPath -Encoding UTF8
+#Append to master file (create header if it doesn't exist)
+if (Test-Path $masterPath) {
+    $info | Export-Csv $masterPath -NoTypeInformation -Append
 } else {
-    $info | Export-Csv $outPath -NoTypeInformation
+    $info | Export-Csv $masterPath -NoTypeInformation
 }
+
+Write-Host "`nAll System Information Gathered Exporting to Files"
+Write-Host "Updated AllSystems.CSV file: "
+Write-Host "System report saved to: $masterPath" -ForegroundColor Cyan
+
+Write-Host "`nExporting $deviceName system information to HTML file..." -ForegroundColor Green
 
 # Save the report to the file
 $htmlReport | Out-File -FilePath $outPath -Encoding UTF8
 
-Write-Host "System report saved to: $outPath"
+Write-Host "System report saved to: $outPath" -ForegroundColor Cyan
+Write-Host "`nSystem information gathered and Exported" -ForegroundColor Green
 
 # Open the folder automatically
 Invoke-Item $runPath
